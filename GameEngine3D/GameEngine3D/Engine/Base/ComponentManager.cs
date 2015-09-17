@@ -8,7 +8,12 @@ namespace GameEngine3D.Engine.Base
     public class ComponentManager
     {
         public List<Component> Components = new List<Component>();
-        //GameObject Owner;
+        public GameObject Owner { get; set; }
+
+        public ComponentManager(GameObject owner)
+        {
+            Owner = owner;
+        }
 
         public void Initialise()
         {
@@ -37,9 +42,15 @@ namespace GameEngine3D.Engine.Base
         {
             if (!Components.Any(c=>c.ID == component.ID))
             {
-                //set manager
+                component.Manager = this;
+                component.OnDestroy += Component_OnDestroy;
                 Components.Add(component);
             }
+        }
+
+        private void Component_OnDestroy(string id)
+        {
+            Remove(id);
         }
 
         public void Remove(string id)

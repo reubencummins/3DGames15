@@ -10,11 +10,16 @@ namespace GameEngine3D.Engine.Base
         public string ID { get; set; }
         public bool Enabled { get; set; }
 
+        public ComponentManager Manager { get; set; }
+
         public virtual void Initalise() { }
         public virtual void Update() { }
         public virtual void Destroy()
         {
-
+            OnDestroy(ID);
         }
+
+        public event StringIDHandler OnDestroy;
+
     }
 }
