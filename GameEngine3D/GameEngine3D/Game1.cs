@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GameEngine3D.Engine;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -26,6 +27,9 @@ namespace GameEngine3D
 
         protected override void Initialize()
         {
+            GameUtilities.GraphicsDevice = GraphicsDevice;
+            GameUtilities.PersistentContent = Content;
+            GameUtilities.Random = new Random(DateTime.Now.Millisecond);
 
             base.Initialize();
         }
