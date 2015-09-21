@@ -38,10 +38,13 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Engine\Base\CameraComponent.cs" />
     <Compile Include="Engine\Base\ComponentManager.cs" />
     <Compile Include="Engine\Base\Component.cs" />
     <Compile Include="Engine\Base\GameObject.cs" />
     <Compile Include="Engine\Base\RenderComponent.cs" />
+    <Compile Include="Engine\GameUtilities.cs" />
+    <Compile Include="Engine\Engines\InputEngine.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
