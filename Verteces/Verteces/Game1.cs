@@ -15,8 +15,12 @@ namespace Verteces
         public Matrix World, View, Projection;
         public Matrix colorTriangleWorld = Matrix.Identity;
         BasicEffect colorEffect;
-        VertexPositionColor[] Verteces;
-
+        BasicEffect textureEffect;
+        BasicEffect normalEffect;
+        VertexPositionColor[] colorVerteces;
+        VertexPositionTexture[] textureVerteces;
+        VertexPositionNormalTexture[] normalVertices;
+        Texture2D texture;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -48,9 +52,14 @@ namespace Verteces
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            CreateVerteces();
+            texture = Content.Load<Texture2D>("images");
+
+            SetupTextureVeritces();
+            SetupNormalVertices();
             // TODO: use this.Content to load your game content here
         }
+
+
 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
@@ -84,7 +93,7 @@ namespace Verteces
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.SkyBlue);
-            DrawColorVertices();
+            DrawNormalVertices();
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
@@ -99,17 +108,49 @@ namespace Verteces
         public void CreateVerteces()
         {
 
-            VertexPositionColor DL = new VertexPositionColor(new Vector3(-1, -1, 0), Color.OrangeRed);
-            VertexPositionColor UP = new VertexPositionColor(new Vector3(0, (float)Math.Sqrt(3)-1, 0),Color.SeaGreen);
+            VertexPositionColor DL = new VertexPositionColor(new Vector3(-1, -1, 0), Color.Red);
+            VertexPositionColor UL = new VertexPositionColor(new Vector3(-1, 1, 0),Color.SeaGreen);
+            VertexPositionColor UR = new VertexPositionColor(new Vector3(1, 1, 0), Color.Goldenrod);
             VertexPositionColor DR = new VertexPositionColor(new Vector3(1, -1, 0), Color.DarkSlateBlue);
 
-            Verteces = new VertexPositionColor[3] { DL, UP, DR };
+
+            colorVerteces = new VertexPositionColor[6] { DL, UL, UR, UR, DR, DL };
             colorEffect = new BasicEffect(GraphicsDevice);
             colorEffect.VertexColorEnabled = true;
 
             colorTriangleWorld *= Matrix.CreateScale(2) * Matrix.CreateTranslation(0, 0, 0);
         }
-        
+
+        public void SetupTextureVeritces()
+        {
+
+            VertexPositionTexture tDL = new VertexPositionTexture(new Vector3(-1, -1, 0), new Vector2(1, 1));
+            VertexPositionTexture tUL = new VertexPositionTexture(new Vector3(-1, 1, 0), new Vector2(1, 0));
+            VertexPositionTexture tUR = new VertexPositionTexture(new Vector3(1, 1, 0), Vector2.Zero);
+            VertexPositionTexture tDR = new VertexPositionTexture(new Vector3(1, -1, 0), new Vector2(0, 1));
+
+
+            textureVerteces = new VertexPositionTexture[6] { tDL, tUL, tUR, tUR, tDR, tDL };
+            textureEffect = new BasicEffect(GraphicsDevice);
+            textureEffect.TextureEnabled = true;
+            colorTriangleWorld *= Matrix.CreateScale(2) * Matrix.CreateTranslation(0, 0, 0);
+        }
+
+        private void SetupNormalVertices()
+        {
+
+            VertexPositionNormalTexture tDL = new VertexPositionNormalTexture(new Vector3(-1, -1, 0),Vector3.Up, new Vector2(1, 1));
+            VertexPositionNormalTexture tUL = new VertexPositionNormalTexture(new Vector3(-1, 1, 0), Vector3.Up, new Vector2(1, 0));
+            VertexPositionNormalTexture tUR = new VertexPositionNormalTexture(new Vector3(1, 1, 0), Vector3.Up, Vector2.Zero);
+            VertexPositionNormalTexture tDR = new VertexPositionNormalTexture(new Vector3(1, -1, 0), Vector3.Up, new Vector2(0, 1));
+
+
+            normalVertices = new VertexPositionNormalTexture[6] { tDL, tUL, tUR, tUR, tDR, tDL };
+            normalEffect = new BasicEffect(GraphicsDevice);
+            normalEffect.TextureEnabled = true;
+            colorTriangleWorld *= Matrix.CreateScale(2) * Matrix.CreateTranslation(0, 0, 0);
+        }
+
         private void DrawColorVertices()
         {
             colorEffect.View = View;
@@ -119,8 +160,40 @@ namespace Verteces
             {
                 pass.Apply();
 
-                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, Verteces, 0, Verteces.Length / 3, VertexPositionColor.VertexDeclaration);
+                GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.TriangleList, colorVerteces, 0, colorVerteces.Length / 3, VertexPositionColor.VertexDeclaration);
+
             }
         }
+
+        private void DrawTextureVertices()
+        {
+            textureEffect.View = View;
+            textureEffect.Projection = Projection;
+            textureEffect.World = colorTriangleWorld;
+            textureEffect.Texture = texture;
+            foreach (EffectPass pass in textureEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                
+                GraphicsDevice.DrawUserPrimitives<VertexPositionTexture>(PrimitiveType.TriangleList, textureVerteces, 0, textureVerteces.Length / 3, VertexPositionTexture.VertexDeclaration);
+            }
+            
+        }
+
+        private void DrawNormalVertices()
+        {
+            normalEffect.View = View;
+            normalEffect.Projection = Projection;
+            normalEffect.World = colorTriangleWorld;
+            normalEffect.Texture = texture;
+            foreach (EffectPass pass in normalEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+
+                GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>(PrimitiveType.TriangleList, normalVertices, 0, normalVertices.Length / 3, VertexPositionNormalTexture.VertexDeclaration);
+            }
+
+        }
     }
+    
 }
